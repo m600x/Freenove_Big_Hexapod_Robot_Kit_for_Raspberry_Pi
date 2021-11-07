@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from Client import *
 from Calibration import *
+from Functions import *
 
 class MyWindow(QMainWindow,Ui_client):
     def __init__(self):
@@ -20,7 +21,7 @@ class MyWindow(QMainWindow,Ui_client):
         super(MyWindow,self).__init__()
         self.setupUi(self)
         self.client=Client()
-        self.fct=Functions(self.client)
+        self.fct = Functions(self)
         self.Video.setScaledContents (True)
 
         # Read files containing IP and images with error handling
@@ -54,9 +55,9 @@ class MyWindow(QMainWindow,Ui_client):
         self.Button_Face_ID.clicked.connect(self.showFaceWindow)
         self.Button_Face_Recognition.clicked.connect(self.faceRecognition)
         self.Button_Sonic.clicked.connect(self.sonic)
-        self.Button_Relax.clicked.connect(self.relax)
-        self.Button_Buzzer.pressed.connect(self.buzzer)
-        self.Button_Buzzer.released.connect(self.buzzer)
+        self.Button_Relax.clicked.connect(self.fct.motors_status)
+        self.Button_Buzzer.pressed.connect(self.fct.buzzer)
+        self.Button_Buzzer.released.connect(self.fct.buzzer)
 
         # Head slider for vertical movement
         self.slider_head.setMinimum(var.HEAD_VERTICAL_MIN)
@@ -425,20 +426,6 @@ class MyWindow(QMainWindow,Ui_client):
         except Exception as e:
             print(e)
 
-#    def relax(self):
-#        try:
-#            if self.Button_Relax.text() == "Motors ON":
-#                self.Button_Relax.setText("Motors OFF")
-#                command = cmd.CMD_SERVOPOWER + "#" + "0" + '\n'
-#                logging.info(">>> %s: %s" % (txt.TXT_MOTORS_OFF , command))
-#            else:
-#                self.Button_Relax.setText("Motors ON")
-#                command = cmd.CMD_SERVOPOWER + "#" + "1" + '\n'
-#                print(">>> Powering on motors: %s" % command)
-#            self.client.send_data(command)
-#        except Exception as e:
-#            print(e)
-
     def attitude(self):
         r = self.map((self.drawpoint[0][0]-800), -100, 100, -15, 15)
         p = self.map((180-self.drawpoint[0][1]), -100, 100, -15, 15)
@@ -633,18 +620,7 @@ class MyWindow(QMainWindow,Ui_client):
             print(command)
         except Exception as e:
             print(e)
-    #BUZZER
-    def buzzer(self):
-        if self.Button_Buzzer.text() == 'Buzzer':
-            command=cmd.CMD_BUZZER+'#1'+'\n'
-            self.client.send_data(command)
-            self.Button_Buzzer.setText('Noise')
-            #print (command)
-        else:
-            command=cmd.CMD_BUZZER+'#0'+'\n'
-            self.client.send_data(command)
-            self.Button_Buzzer.setText('Buzzer')
-            #print (command)
+
     #BALANCE
     def imu(self):
         if self.Button_IMU.text()=='Balance':

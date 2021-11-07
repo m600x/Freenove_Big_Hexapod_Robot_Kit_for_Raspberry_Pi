@@ -71,7 +71,7 @@ class Client:
     def send_data(self,data):
         if self.tcp_flag:
             try:
-                self.client_socket1.send(data.encode('utf-8'))
+                self.client_socket1.send(data.encode('utf-8') + '\n')
             except Exception as e:
                 print(e)
     def receive_data(self):

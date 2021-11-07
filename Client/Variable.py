@@ -3,7 +3,7 @@ class VARIABLE:
     FILEPATH_WINDOW_ICON = "Picture/logo_Mini.png"
     FILEPATH_WINDOW_CAMERA = "Picture/Spider_client.png"
 
-    LOG_FORMAT = "[%(asctime)s][ %(levelname)-8s ][%(module)s:%(funcName)s:%(lineno)s ] %(message)s"
+    LOG_FORMAT = "[%(asctime)s][ %(levelname)-8s ][ %(module)s:%(funcName)s:%(lineno)s ] %(message)s"
 
     HEAD_VERTICAL_MIN = 50
     HEAD_VERTICAL_MAX = 180
