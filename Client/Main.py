@@ -1,23 +1,18 @@
 # -*- coding: utf-8 -*-
-import sys
-import math
-import logging
 
-from ui_led import Ui_led
-from ui_face import Ui_Face
-from ui_client import Ui_client
-from PyQt5 import QtCore, QtGui, QtWidgets
+from interface.ui_led import Ui_led
+from interface.ui_face import Ui_Face
+from interface.ui_client import Ui_client
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from Client import *
-from Calibration import *
+from interface.Calibration import *
 from Functions import *
 
 class MyWindow(QMainWindow,Ui_client):
     def __init__(self):
-        logging.basicConfig(format=var.LOG_FORMAT,
-                            level=logging.DEBUG)
+        logging.basicConfig(format=var.LOG_FORMAT, level=logging.DEBUG)
         super(MyWindow,self).__init__()
         self.setupUi(self)
         self.client=Client()
@@ -54,7 +49,7 @@ class MyWindow(QMainWindow,Ui_client):
         self.Button_LED.clicked.connect(self.showLedWindow)
         self.Button_Face_ID.clicked.connect(self.showFaceWindow)
         self.Button_Face_Recognition.clicked.connect(self.faceRecognition)
-        self.Button_Sonic.clicked.connect(self.sonic)
+        self.Button_Sonic.clicked.connect(self.fct.ultrasonic)
         self.Button_Relax.clicked.connect(self.fct.motors_status)
         self.Button_Buzzer.pressed.connect(self.fct.buzzer)
         self.Button_Buzzer.released.connect(self.fct.buzzer)
@@ -97,21 +92,20 @@ class MyWindow(QMainWindow,Ui_client):
 
         # Set default checkbox status
         self.ButtonActionMode1.setChecked(True)
-        self.ButtonActionMode1.toggled.connect(lambda: self.actionMode(self.ButtonActionMode1))
+        self.ButtonActionMode1.toggled.connect(lambda: self.fct.action_mode(self.ButtonActionMode1))
         self.ButtonActionMode2.setChecked(False)
-        self.ButtonActionMode2.toggled.connect(lambda: self.actionMode(self.ButtonActionMode2))
+        self.ButtonActionMode2.toggled.connect(lambda: self.fct.action_mode(self.ButtonActionMode2))
         self.ButtonGaitMode1.setChecked(True)
-        self.ButtonGaitMode1.toggled.connect(lambda: self.gaitMode(self.ButtonGaitMode1))
+        self.ButtonGaitMode1.toggled.connect(lambda: self.fct.gait_mode(self.ButtonGaitMode1))
         self.ButtonGaitMode2.setChecked(False)
-        self.ButtonGaitMode2.toggled.connect(lambda: self.gaitMode(self.ButtonGaitMode2))
+        self.ButtonGaitMode2.toggled.connect(lambda: self.fct.gait_mode(self.ButtonGaitMode2))
 
         # Start timers
         self.timer=QTimer(self)
         self.timer.timeout.connect(self.refresh_image)
         self.timer_power = QTimer(self)
         self.timer_power.timeout.connect(self.power)
-        self.timer_sonic = QTimer(self)
-        self.timer_sonic.timeout.connect(self.getSonicData)
+
 
         #Variable
         self.power_value= [100,100]
@@ -149,7 +143,7 @@ class MyWindow(QMainWindow,Ui_client):
             self.faceRecognition()
         if (event.key() == Qt.Key_U):
             print("U")
-            self.sonic()
+            self.fct.ultrasonic()
         if (event.key() == Qt.Key_I):
             print("I")
             self.showFaceWindow()
@@ -516,7 +510,7 @@ class MyWindow(QMainWindow,Ui_client):
                 if data=="":
                     self.client.tcp_flag=False
                     break
-                elif data[0]==cmd.CMD_SONIC:
+                elif data[0]==cmd.CMD_ULTRASONIC:
                     self.label_sonic.setText('Obstacle:'+data[1]+'cm')
                     #print('Obstacle:',data[1])
                 elif data[0]==cmd.CMD_POWER:
@@ -563,35 +557,7 @@ class MyWindow(QMainWindow,Ui_client):
                 self.timer_power.stop()
         except Exception as e:
             print(e)
-    #Mode
-    #actionMode
-    def actionMode(self,mode):
-        if mode.text() == "Action Mode 1":
-            if mode.isChecked() == True:
-                #print(mode.text())
-                self.ButtonActionMode1.setChecked(True)
-                self.ButtonActionMode2.setChecked(False)
-                self.action_flag = 1
-        elif mode.text() == "Action Mode 2":
-            if mode.isChecked() == True:
-                #print(mode.text())
-                self.ButtonActionMode1.setChecked(False)
-                self.ButtonActionMode2.setChecked(True)
-                self.action_flag = 2
-    # gaitMode
-    def gaitMode(self,mode):
-        if mode.text() == "Gait Mode 1":
-            if mode.isChecked() == True:
-                #print(mode.text())
-                self.ButtonGaitMode1.setChecked(True)
-                self.ButtonGaitMode2.setChecked(False)
-                self.gait_flag = 1
-        elif mode.text() == "Gait Mode 2":
-            if mode.isChecked() == True:
-                #print(mode.text())
-                self.ButtonGaitMode1.setChecked(False)
-                self.ButtonGaitMode2.setChecked(True)
-                self.gait_flag = 2
+
     #Slider
     def speed(self):
         self.client.move_speed=str(self.slider_speed.value())
@@ -633,20 +599,6 @@ class MyWindow(QMainWindow,Ui_client):
             self.client.send_data(command)
             self.Button_IMU.setText('Balance')
             #print (command)
-    #SNOIC
-    def sonic(self):
-        if self.Button_Sonic.text() == 'Sonic':
-            self.timer_sonic.start(100)
-            self.Button_Sonic.setText('Close')
-
-        else:
-            self.timer_sonic.stop()
-            self.Button_Sonic.setText('Sonic')
-            #
-    def getSonicData(self):
-        command=cmd.CMD_SONIC+'\n'
-        self.client.send_data(command)
-        #print (command)
 
     def showCalibrationWindow(self):
         command = cmd.CMD_CALIBRATION + '\n'

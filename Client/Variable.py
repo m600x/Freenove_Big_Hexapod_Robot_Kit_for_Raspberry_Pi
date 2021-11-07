@@ -30,6 +30,8 @@ class VARIABLE:
     Z_HEIGHT_STEP = 1
     Z_HEIGHT_DEFAULT = 0
 
+    ULTRASONIC_POLLING_INTERVAL_MS = 1000
+
 #    _MIN = 
 #    _MAX = 
 #    _STEP = 

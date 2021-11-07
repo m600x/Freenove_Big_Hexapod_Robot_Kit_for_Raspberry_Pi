@@ -608,7 +608,7 @@ class Ui_client(object):
         self.Button_Video.setText(_translate("client", "Open Video"))
         self.Button_IMU.setText(_translate("client", "Balance"))
         self.Button_Calibration.setText(_translate("client", "Calibration"))
-        self.Button_Sonic.setText(_translate("client", "Sonic"))
+        self.Button_Sonic.setText(_translate("client", "Ultrasonic OFF"))
         self.Button_LED.setText(_translate("client", "LED"))
         self.label_6.setText(_translate("client", "Roll"))
         self.label_attitude.setText(_translate("client", "(0,0)"))
